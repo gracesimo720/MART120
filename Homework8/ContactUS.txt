@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Us</title>
+  <style>
+    .error {
+      border: 2px solid red;
+      background-color: #ffe6e6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contact Us</h1>
+
+  <form id="contactForm">
+    Name:<br>
+    <input type="text" id="name"><br><br>
+
+    Email:<br>
+    <input type="text" id="email"><br><br>
+
+    <input type="checkbox" id="terms"> I agree to terms<br><br>
+
+    <button type="button" onclick="validateAndSubmit()">Submit</button>
+  </form>
+
+  <script>
+    function validateAndSubmit() {
+      var nameField = document.getElementById("name");
+      var emailField = document.getElementById("email");
+      var termsBox = document.getElementById("terms");
+
+      // clear previous error styles
+      nameField.classList.remove("error");
+      emailField.classList.remove("error");
+
+      // check name
+      if (nameField.value.trim() === "") {
+        nameField.classList.add("error");
+        nameField.focus();
+        return;
+      }
+
+      // check email
+      if (emailField.value.trim() === "") {
+        emailField.classList.add("error");
+        emailField.focus();
+        return;
+      }
+
+      // simple email pattern
+      var patt = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!patt.test(emailField.value.trim())) {
+        emailField.classList.add("error");
+        emailField.focus();
+        return;
+      }
+
+      // check terms
+      if (!termsBox.checked) {
+        termsBox.focus();
+        return;
+      }
+
+      // if all good, you could submit
+      document.getElementById("contactForm").submit();
+    }
+  </script>
+
+</body>
+</html>
