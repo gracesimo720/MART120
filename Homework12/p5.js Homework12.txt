@@ -1,0 +1,135 @@
+// -----------------------------------
+// VARIABLES
+// -----------------------------------
+let player;
+let exitZone;
+let obstacle1, obstacle2;
+
+function setup() {
+  createCanvas(600, 400);
+  
+  player = createPlayer(width / 2, height / 2);
+  
+  // create two obstacles
+  obstacle1 = createObstacle(100, 100, 50, color(255, 0, 0), 2, 1.5);
+  obstacle2 = createObstacle(400, 200, 70, color(0, 0, 255), -1.5, 2);
+  
+  exitZone = createExit(width - 80, height - 80, 60);
+}
+
+// -----------------------------------
+// DRAW LOOP
+// -----------------------------------
+function draw() {
+  background(220);
+  
+  drawBorder();
+  drawExit(exitZone);
+  
+  movePlayer();
+  drawPlayer(player);
+  
+  moveObstacle(obstacle1);
+  drawObstacle(obstacle1);
+  
+  moveObstacle(obstacle2);
+  drawObstacle(obstacle2);
+  
+  drawMouseObject();
+  
+  checkWin();
+}
+
+// -----------------------------------
+// PLAYER FUNCTIONS
+// -----------------------------------
+function createPlayer(x, y) {
+  return { x: x, y: y, size: 30, speed: 3 };
+}
+
+function movePlayer() {
+  if (keyIsDown(LEFT_ARROW)) player.x -= player.speed;
+  if (keyIsDown(RIGHT_ARROW)) player.x += player.speed;
+  if (keyIsDown(UP_ARROW)) player.y -= player.speed;
+  if (keyIsDown(DOWN_ARROW)) player.y += player.speed;
+}
+
+function drawPlayer(p) {
+  fill(0);
+  circle(p.x, p.y, p.size);
+}
+
+// -----------------------------------
+// MOUSE FUNCTION
+// -----------------------------------
+function drawMouseObject() {
+  if (mouseIsPressed) {
+    fill(150, 0, 200);
+    ellipse(mouseX, mouseY, 20);
+  }
+}
+
+// -----------------------------------
+// OBSTACLE FUNCTIONS
+// -----------------------------------
+function createObstacle(x, y, size, c, dx, dy) {
+  return { x: x, y: y, size: size, color: c, dx: dx, dy: dy };
+}
+
+function moveObstacle(obs) {
+  obs.x += obs.dx;
+  obs.y += obs.dy;
+  
+  // Wrap around screen
+  if (obs.x < 0) obs.x = width;
+  if (obs.x > width) obs.x = 0;
+  if (obs.y < 0) obs.y = height;
+  if (obs.y > height) obs.y = 0;
+}
+
+function drawObstacle(obs) {
+  fill(obs.color);
+  circle(obs.x, obs.y, obs.size);
+}
+
+// -----------------------------------
+// BORDER FUNCTION
+// -----------------------------------
+function drawBorder() {
+  noFill();
+  stroke(0);
+  strokeWeight(4);
+  rect(0, 0, width, height);
+}
+
+// -----------------------------------
+// EXIT FUNCTIONS
+// -----------------------------------
+function createExit(x, y, size) {
+  return { x: x, y: y, size: size };
+}
+
+function drawExit(exit) {
+  fill(255, 215, 0);
+  rect(exit.x, exit.y, exit.size, exit.size);
+}
+
+// -----------------------------------
+// WIN CONDITION
+// -----------------------------------
+function checkWin() {
+  if (
+    player.x > exitZone.x &&
+    player.y > exitZone.y
+  ) {
+    displayWin();
+    noLoop();
+  }
+}
+
+function displayWin() {
+  textSize(40);
+  fill(0, 150, 0);
+  textAlign(CENTER, CENTER);
+  text("YOU WIN!", width / 2, height / 2);
+}
