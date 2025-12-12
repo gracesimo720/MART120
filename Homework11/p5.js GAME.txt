@@ -1,0 +1,165 @@
+// Grace Simonich - P5.js Game Homework (Updated with Lose Condition)
+
+let player;
+let obstacles = [];
+let staticObstacle = null;
+let exitZone;
+let gameOver = false;
+let gameWon = false;
+
+function setup() {
+  createCanvas(600, 400);
+  
+  // Player setup
+  player = {
+    x: 50,
+    y: height / 2,
+    size: 30,
+    speed: 3
+  };
+  
+  // Create moving obstacles
+  for (let i = 0; i < 3; i++) {
+    obstacles.push({
+      x: random(width),
+      y: random(height),
+      size: random(20, 50),
+      color: color(random(255), random(255), random(255)),
+      xSpeed: random(-2, 2),
+      ySpeed: random(-2, 2)
+    });
+  }
+  
+  // Exit zone setup
+  exitZone = {
+    x: width - 60,
+    y: height / 2 - 30,
+    w: 40,
+    h: 60,
+  };
+}
+
+function draw() {
+  background(220);
+  
+  // Draw exit zone
+  fill(0, 255, 0);
+  rect(exitZone.x, exitZone.y, exitZone.w, exitZone.h);
+  textSize(14);
+  fill(0);
+  text("EXIT", exitZone.x + 5, exitZone.y + exitZone.h / 2 + 5);
+  
+  // Display end messages
+  if (gameWon) {
+    textSize(40);
+    fill(0, 150, 0);
+    textAlign(CENTER, CENTER);
+    text("YOU WIN!", width / 2, height / 2);
+    noLoop();
+    return;
+  }
+  
+  if (gameOver) {
+    textSize(40);
+    fill(200, 0, 0);
+    textAlign(CENTER, CENTER);
+    text("YOU LOSE!", width / 2, height / 2);
+    noLoop();
+    return;
+  }
+  
+  movePlayer();
+  displayPlayer();
+  
+  moveObstacles();
+  displayObstacles();
+  
+  // Draw static obstacle if placed
+  if (staticObstacle) {
+    fill(100, 0, 200);
+    rect(staticObstacle.x, staticObstacle.y, staticObstacle.size, staticObstacle.size);
+  }
+  
+  checkWinCondition();
+  checkLoseCondition();
+}
+
+// --- Player Movement ---
+function movePlayer() {
+  if (keyIsDown(LEFT_ARROW)) {
+    player.x -= player.speed;
+  } else if (keyIsDown(RIGHT_ARROW)) {
+    player.x += player.speed;
+  } else if (keyIsDown(UP_ARROW)) {
+    player.y -= player.speed;
+  } else if (keyIsDown(DOWN_ARROW)) {
+    player.y += player.speed;
+  }
+
+  // Wrap player around edges
+  if (player.x > width) player.x = 0;
+  else if (player.x < 0) player.x = width;
+  if (player.y > height) player.y = 0;
+  else if (player.y < 0) player.y = height;
+}
+
+function displayPlayer() {
+  fill(0, 0, 255);
+  ellipse(player.x, player.y, player.size);
+}
+
+// --- Obstacles ---
+function moveObstacles() {
+  for (let o of obstacles) {
+    o.x += o.xSpeed;
+    o.y += o.ySpeed;
+    
+    // Wrap around using logical OR
+    if (o.x > width || o.x < 0) {
+      o.x = (o.x + width) % width;
+    }
+    if (o.y > height || o.y < 0) {
+      o.y = (o.y + height) % height;
+    }
+  }
+}
+
+function displayObstacles() {
+  for (let o of obstacles) {
+    fill(o.color);
+    ellipse(o.x, o.y, o.size);
+  }
+}
+
+// --- Mouse Adds Static Obstacle ---
+function mousePressed() {
+  if (!staticObstacle) {
+    staticObstacle = {
+      x: mouseX,
+      y: mouseY,
+      size: 40
+    };
+  }
+}
+
+// --- Win Condition ---
+function checkWinCondition() {
+  if (
+    player.x > exitZone.x &&
+    player.x < exitZone.x + exitZone.w &&
+    player.y > exitZone.y &&
+    player.y < exitZone.y + exitZone.h
+  ) {
+    gameWon = true;
+  }
+}
+
+// --- Lose Condition (Collision Detection) ---
+function checkLoseCondition() {
+  for (let o of obstacles) {
+    let d = dist(player.x, player.y, o.x, o.y);
+    if (d < player.size / 2 + o.size / 2) {
+      gameOver = true;
+    }
+  }
+}

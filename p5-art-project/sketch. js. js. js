@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>p5.js Art Piece</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+</head>
+
+<body style="margin:0; padding:0; overflow:hidden; background:black;">
+
+<script>
+// ---------------- VARIABLES ----------------
+let circles = [];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  noStroke();
+  
+  // create starting circles
+  for (let i = 0; i < 80; i++) {
+    circles.push({
+      x: random(width),
+      y: random(height),
+      size: random(20, 80),
+      xSpeed: random(-1, 1),
+      ySpeed: random(-1, 1)
+    });
+  }
+}
+
+function draw() {
+  background(10, 10, 20, 30);  // soft motion blur effect
+  
+  for (let c of circles) {
+    // soft shifting color wave
+    fill(
+      150 + sin(frameCount * 0.01 + c.x) * 100,
+      200 + sin(frameCount * 0.02 + c.y) * 50,
+      255
+    );
+    
+    circle(c.x, c.y, c.size);
+    
+    // movement
+    c.x += c.xSpeed;
+    c.y += c.ySpeed;
+    
+    // bounce edges
+    if (c.x < 0 || c.x > width) c.xSpeed *= -1;
+    if (c.y < 0 || c.y > height) c.ySpeed *= -1;
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+
+</body>
+</html>
